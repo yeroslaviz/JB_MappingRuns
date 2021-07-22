@@ -1,0 +1,133 @@
+---
+title: "P59"
+author: "AY"
+date: "11/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+list of files:
+dros-ChIP_S13_L001_R1_001.fastq
+dros-ChIP_S13_L001_R2_001.fastq
+dros-ChIP_S13_L002_R1_001.fastq
+dros-ChIP_S13_L002_R2_001.fastq
+dros-ChIP_S13_L003_R1_001.fastq
+dros-ChIP_S13_L003_R2_001.fastq
+dros-ChIP_S13_L004_R1_001.fastq
+dros-ChIP_S13_L004_R2_001.fastq
+
+### concatenate the R1/R2 files
+
+cat dros-ChIP_S13_*_R1_001.fastq > dros-ChIP_S13_R1.fastq
+cat dros-ChIP_S13_*_R2_001.fastq > dros-ChIP_S13_R2.fastq
+
+### run fastqc on the samples
+
+fastqc -t 2 dros-ChIP_S13_R*
+
+### run fastx_collapse on the data
+
+for i in `find . -name "dros-ChIP_S13_R*.fastq"`
+do
+base=$(basename $i .fastq)
+echo "$base"
+fastx_collapser -i $i -o $base.collapsed.fastq -v -Q33
+done
+
+dros-ChIP_S13_R2
+Input: 21068794 sequences (representing 21068794 reads)
+Output: 4921127 sequences (representing 21068794 reads)
+dros-ChIP_S13_R1
+Input: 21068794 sequences (representing 21068794 reads)
+Output: 4117542 sequences (representing 21068794 reads)
+
+# finding how many of the collapsed files are unique
+
+grep  -c ">*-1$" dros-ChIP_S13_R1.collapsed.fastq
+1436939
+grep  -c ">*-1$" dros-ChIP_S13_R2.collapsed.fastq
+2276451
+
+### run trim_galore to filter out low quality reads
+trim_galore -q 20 --fastqc --gzip --length 20 -o trimGalore.dros-ChIP_S13/ --paired --retain_unpaired -r1 35 -r2 35 --phred33 dros-ChIP_S13_R1.fastq dros-ChIP_S13_R2.fastq > trimgaloreOut.dros-ChIP_S13.txt 2>&1
+
+
+### run fastx_trimmer to trim the first 5 and the last base of the reads for better mappability.
+
+for i in `find . -name "dros-ChIP_S13_R*.fastq"`
+do
+base=$(basename $i .fastq)
+echo "$base"
+fastx_trimmer -f 6 -l 75 -i $i -o $base.trimmed.fastq -v -Q33
+done
+
+
+### download the Drosophila genome build dm6 (UCSCU)from iGenomes
+### map the fastq files (PE) to the drosophila genome using STAR
+
+# generate the genome index
+
+/home/yeroslaviz/software/STAR-STAR-2.5.1a/source/STAR --runThreadN 10 --runMode genomeGenerate --genomeDir STARIndex/ --genomeFastaFiles WholeGenomeFasta/genome.fa
+
+# mapping the raw fastq files
+
+/home/yeroslaviz/software/STAR-2.5.2b/bin/Linux_x86_64/STAR  --runThreadN 10 --genomeDir  ~/genomes/Drosophila_melanogaster/UCSC/dm6/Sequence/STARIndex/ --readFilesIn  ../rawData/dros-ChIP_S13_R1.fastq ../rawData/dros-ChIP_S13_R2.fastq  --outFileNamePrefix dros-ChIP_S13.rawData. --outFilterMultimapNmax 1  --alignIntronMax 1  --outSAMtype BAM SortedByCoordinate  --outWigType wiggle read1_5p  --outReadsUnmapped Fastx  --alignEndsType EndToEnd
+
+samtools index dros-ChIP_S13.rawData.Aligned.sortedByCoord.out.bam
+
+
+
+# mapping the trimmed fastq files (fastx_trimmer)
+
+/home/yeroslaviz/software/STAR-2.5.2b/bin/Linux_x86_64/STAR  --runThreadN 10 --genomeDir  ~/genomes/Drosophila_melanogaster/UCSC/dm6/Sequence/STARIndex/ --readFilesIn  ../trimmed.fastq/dros-ChIP_S13_R1.trimmed.fastq ../trimmed.fastq/dros-ChIP_S13_R2.trimmed.fastq  --outFileNamePrefix fastx_trimmer_mapping/dros-ChIP_S13.trimmed. --outFilterMultimapNmax 1  --alignIntronMax 1  --outSAMtype BAM SortedByCoordinate  --outWigType wiggle read1_5p  --outReadsUnmapped Fastx  --alignEndsType EndToEnd
+
+samtools index dros-ChIP_S13.trimGalore.Aligned.sortedByCoord.out.bam 
+
+# mapping the filtered fastq files (trim_galore)
+
+/home/yeroslaviz/software/STAR-2.5.2b/bin/Linux_x86_64/STAR  --runThreadN 10  --readFilesCommand zcat --genomeDir  ~/genomes/Drosophila_melanogaster/UCSC/dm6/Sequence/STARIndex/ --readFilesIn  ../trimGalore.dros-ChIP_S13/dros-ChIP_S13_R1_val_1.fq.gz ../trimGalore.dros-ChIP_S13/dros-ChIP_S13_R2_val_2.fq.gz  --outFileNamePrefix trimGalore_mapping/dros-ChIP_S13.trimGalore. --outFilterMultimapNmax 1  --alignIntronMax 1  --outSAMtype BAM SortedByCoordinate  --outWigType wiggle read1_5p  --outReadsUnmapped Fastx  --alignEndsType EndToEnd
+
+samtools index dros-ChIP_S13.trimmed.Aligned.sortedByCoord.out.bam 
+
+# convert the bam files into bigwig for better visualisation
+
+for i in `ls -1 *.bam`
+do 
+prefix=$(basename $i .bam)
+echo "running bam2wig.py for $prefix"
+bam2wig.py -i $i -s dm6.genome -o $prefix
+echo "running bamTobed--bedGraphToBigWig for $prefix"
+bamToBed -i $i | genomeCoverageBed -i stdin -bg -g dm6.genome | bedClip stdin dm6.genome $prefix.bg.clip
+bedGraphToBigWig $prefix.bg.clip dm6.genome $prefix.bw
+done
+
+### mapping the raw data files with bowtie1 and converting them to bigWig
+
+	bowtie -p 10 -m 1 -S --un $NEW_FILE.unmapped -q ~/genomes/Drosophila_melanogaster/UCSC/dm6/Sequence/BowtieIndex/genome -1 rawData/dros-ChIP_S13_R1.fastq -2 rawData/dros-ChIP_S13_R2.fastq bowtie1Mapping/dros-ChIP_S13_R1.rawData.sam 2> bowtie1Mapping/dros-ChIP_S13_R1.rawData.stat
+	echo "sorting and indexing $NEW_FILE"
+	samtools view -Shu bowtie1Mapping/dros-ChIP_S13_R1.rawData.sam> bowtie1Mapping/dros-ChIP_S13_R1.rawData.bam
+	samtools sort bowtie1Mapping/dros-ChIP_S13_R1.rawData.bam bowtie1Mapping/dros-ChIP_S13_R1.rawData.sorted
+	samtools index bowtie1Mapping/dros-ChIP_S13_R1.rawData.sorted.bam
+	rm bowtie1Mapping/dros-ChIP_S13_R1.rawData.sam bowtie1Mapping/dros-ChIP_S13_R1.rawData.bam
+	
+	echo "running bam2wig.py"
+	bam2wig.py -i bowtie1Mapping/dros-ChIP_S13_R1.rawData.sorted.bam -s dm6.genome -o bowtie1Mapping/dros-ChIP_S13_R1.bam2wig.rawData
+	
+	echo "running bam2wig.devonRyan"
+	bam2wig.devonR  bowtie1Mapping/dros-ChIP_S13_R1.rawData.sorted.bam bowtie1Mapping/dros-ChIP_S13_R1.devonR.rawData
+	wigToBigWig bowtie1Mapping/dros-ChIP_S13_R1.devonR.rawData.plus.wig dm6.genome bowtie1Mapping/dros-ChIP_S13_R1.devonR.rawData
+	wigToBigWig bowtie1Mapping/dros-ChIP_S13_R1.devonR.rawData.minus.wig dm6.genome bowtie1Mapping/dros-ChIP_S13_R1.devonR.rawData
+
+	echo "running bamTobed--bedGraphToBigWig"
+	bamToBed -i bowtie1Mapping/dros-ChIP_S13_R1.rawData.sorted.bam | genomeCoverageBed -i stdin -bg -g dm6.genome | bedClip stdin dm6.genome bowtie1Mapping/dros-ChIP_S13_R1.rawData.sorted.bg.clip
+	bedGraphToBigWig bowtie1Mapping/dros-ChIP_S13_R1.rawData.sorted.bg.clip dm6.genome bowtie1Mapping/dros-ChIP_S13_R1.rawData.sorted.bg.bw
+
+
+
+
+
+
+

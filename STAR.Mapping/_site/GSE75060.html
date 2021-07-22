@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>STAR mapping</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">STAR mapping</h1>
+
+</div>
+
+
+<p>This workflow was done to map the samples from both one published data set (GSE75060) a well as in-house data set.</p>
+<p>Organism - <em>Drosophila melanogaster</em> Mapping tool - STAR aligner genome build - dm6</p>
+<p>the session will run on supercube006 using conde</p>
+<div id="create-conda-session" class="section level1">
+<h1>create conda session</h1>
+<div id="create-environment" class="section level2">
+<h2>create environment</h2>
+<pre class="bash"><code>conda create --name JacqueB star
+conda activate JacqueB</code></pre>
+</div>
+<div id="install-necessary-tool" class="section level2">
+<h2>install necessary tool</h2>
+<pre class="bash"><code>conda install -c bioconda star
+conda install -c bioconda sra-tools # to be able to wwork with fasterq_dump to download the SRA files
+</code></pre>
+</div>
+</div>
+<div id="generate-genomic-index-for-star" class="section level1">
+<h1>Generate genomic index for STAR</h1>
+<pre class="bash"><code>cd /home/yeroslaviz/genomes/D_melanogaster/dm6
+STAR --runMode genomeGenerate --runThreadN 10 --genomeDir starIndex/ --genomeFastaFiles dmel-all-chromosome-r6.26.fasta --sjdbGTFfile dmel-all-r6.26.gtf  sjdbOverhang 99</code></pre>
+<div id="downloading-the-public-data-set" class="section level2">
+<h2>downloading the public data set</h2>
+<p>The data set in question is GSE75060 (=SRP066261) it will be downloaded using the fastq_dump tool from the SRA toolkit.</p>
+<pre class="bash"><code>fasterq-dump --split-files -O fastqFiles SRR2919532
+fasterq-dump --split-files -O fastqFiles SRR2919533
+fasterq-dump --split-files -O fastqFiles SRR2919534
+fasterq-dump --split-files -O fastqFiles SRR2919535</code></pre>
+<p>I was trying to download the whole project in one go. the project name is <strong>PRJNA302312</strong>. The idea how to do it I got from <a href="https://www.biostars.org/p/163482/">here</a>. first one needs to get hte RunInfo table of the project. From within it, the links for each of the files should be extracted. this might need a little bit of tweeking, as the files are different for each project.</p>
+<pre class="bash"><code>wget &#39;http://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?save=efetch&amp;rettype=runinfo&amp;db=sra&amp;term=PRJNA302312&#39; -O - | grep -v &#39;^Run&#39; |  cut -d&#39;,&#39; -f 1 |  xargs -n 1 fasterq-dump</code></pre>
+<p>the command comprises several steps</p>
+<ol style="list-style-type: decimal">
+<li>get the RunInfo table</li>
+<li><code>grep</code> only for the rows which starts with Run. This way the header isa avoided. The Run rows contain the data to be downloaded.</li>
+<li>extract the field in the table (comma-separated, therfore <code>-d','</code>) with the name of the sample itself. This is field number 1. therefoe I uses the parameter <code>f1</code>.</li>
+<li>run for each of the links the command <code>fasterq-dump</code>, which downloads all the files.</li>
+</ol>
+<p>Another way of eaching the same goal is using the esearch tool (entrez-direct).</p>
+<pre class="bash"><code>esearch -db sra -query PRJNA291386 | efetch --format runinfo | cut -d &#39;,&#39; -f 1 | grep SRR | xargs fastq-dump</code></pre>
+<p>this can be done also with or without the option <code>--split-3</code> for splitting paired-end files in to two separate files with <code>_1</code> and <code>_2</code> suffixes.</p>
+</div>
+</div>
+<div id="mapping-the-public-data-set" class="section level1">
+<h1>Mapping the public data set</h1>
+<div id="set-parameters" class="section level2">
+<h2>set parameters</h2>
+<pre class="bash"><code>starIndex=&quot;/home/yeroslaviz/genomes/D_melanogaster/dm6/starIndex/&quot;</code></pre>
+</div>
+<div id="map-the-files" class="section level2">
+<h2>map the files</h2>
+<p>There are four files downloaded</p>
+<pre class="bash"><code>ls -1 GSE75060/
+SRR2919532.fastq
+SRR2919533.fastq
+SRR2919534.fastq
+SRR2919535.fastq</code></pre>
+<pre class="bash"><code>
+mkdir -p GSE75060.STAROutput # keep permissions
+
+for file in `ls -1 GSE75060/`
+do
+#echo &quot;$file&quot;
+#base=$(echo $file | sed -E &quot;s/(.*\.)conc.R1.fastq.gz/\1/&quot;)
+base=$(echo $file | sed -E &quot;s/(.*)\.fastq/\1/&quot;)
+echo &quot;running STAR for file $base&quot;
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --genomeDir $starIndex --outFileNamePrefix GSE75060.STAROutput/$base --readFilesIn GSE75060/$file
+done</code></pre>
+</div>
+<div id="indexing" class="section level2">
+<h2>indexing</h2>
+<pre class="bash"><code>cd GSE75060.STAROutput/
+  
+for i in ` ls -1 *.bam`
+do
+echo $i
+samtools index $i
+done
+</code></pre>
+</div>
+</div>
+<div id="mapping-the-locally-created-fastq-files" class="section level1">
+<h1>Mapping the locally created fastq files</h1>
+<pre class="bash"><code>starIndex=&quot;/home/yeroslaviz/genomes/D_melanogaster/dm6/starIndex/&quot;
+rawData=&quot;/home/yeroslaviz/poolFolders/pool-bcfngs/fastq_files/P59/P59_Single_Dm_Embryo_1/conc.fastq/&quot;</code></pre>
+<pre class="bash"><code>
+mkdir -p P59.STAROutput # keep permissions
+
+for file in `ls -1 $rawData/`
+do
+#echo &quot;$file&quot;
+#base=$(echo $file | sed -E &quot;s/(.*\.)conc.R1.fastq.gz/\1/&quot;)
+base=$(echo $file | sed -E &quot;s/(.*)\.fastq.gz/\1/&quot;)
+echo &quot;running STAR for file $rawData/$base&quot;
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --genomeDir $starIndex --outFileNamePrefix P59.STAROutput/$base --readFilesIn $rawData/$file
+done</code></pre>
+<div id="indexing-1" class="section level2">
+<h2>indexing</h2>
+<pre class="bash"><code>cd P59.STAROutput/
+  
+for i in ` ls -1 *.bam`
+do
+echo $i
+samtools index $i
+done
+</code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

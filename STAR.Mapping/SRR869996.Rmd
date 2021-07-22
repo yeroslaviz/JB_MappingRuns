@@ -1,0 +1,55 @@
+---
+title: "SRR869996"
+author: "AY"
+date: "11/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. download the data from NCBI/GEO
+
+wget ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR869/SRR869996/SRR869996.sra
+
+2. convert the sra file into fastq
+
+~/software/sratoolkit.2.3.4-2-ubuntu64/bin/fastq-dump SRR869996.sra
+
+3. map the file to the latest drosophila genome assembly (Ensembl/BDGP5.25) using tophat with default parameters 
+
+tophat2  -p 16 -o SRR869996 ~/genomes/Drosophila_melanogaster/Ensembl/BDGP5.25/Sequence/Bowtie2Index/genome SRR869996.fastq 2> SRR869996.tophat_stat
+
+Reads:
+               Input:  16653050
+              Mapped:  14312016 (85.9% of input)
+            of these:   1564221 (10.9%) have multiple alignments (13942 have >20)
+85.9% overall read alignment rate.
+
+4. converting the bam file into bed file using the BEDTools software (V.4)
+
+bamToBed -i SRR869996/accepted_hits.bam > SRR869996.bed
+
+further data sets:
+GSM1147485 - ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR870/SRR870166/SRR870166.sra
+GSM1147115 - ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR869/SRR869711/SRR869711.sra
+GSM1147481 - ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR870/SRR870162/SRR870162.sra
+GSM1147311 - ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR869/SRR869992/SRR869992.sra
+GSM1147307 - ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR869/SRR869984/SRR869984.sra
+GSM1147323 - ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR870/SRR870004/SRR870004.sra
+GSM1147223 - ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR869/SRR869899/SRR869899.sra
+GSM1147347 - ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR870/SRR870028/SRR870028.sra
+
+for file in `ls -1 *.sra`
+do
+NEW_FILE=$(echo $file | sed -E "s/.sra//")
+echo $NEW_FILE
+echo "converting $file into $NEW_FILE.fastq"
+~/software/sratoolkit.2.3.4-2-ubuntu64/bin/fastq-dump $NEW_FILE.sra
+echo "running tophat2 with default parameters to map $NEW_FILE.fastq to dmel assembly (Ensembl/BDGP5.25)"
+tophat2  -p 8 -o $NEW_FILE ~/genomes/Drosophila_melanogaster/Ensembl/BDGP5.25/Sequence/Bowtie2Index/genome $NEW_FILE.fastq 2> $NEW_FILE.tophat_stat
+echo "converting the bam file in the $NEW_FILE folder into $NEW_FILE.bed file with BEDTools"
+bamToBed -i $NEW_FILE/accepted_hits.bam > $NEW_FILE.bed
+done
+

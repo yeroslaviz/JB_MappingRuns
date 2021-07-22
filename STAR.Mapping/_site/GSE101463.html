@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="AY" />
+
+
+<title>GSE101463.03.06.3019</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">GSE101463.03.06.3019</h1>
+<h4 class="author">AY</h4>
+<h4 class="date">6/3/2019</h4>
+
+</div>
+
+
+<p>a new data set from the Müller group was released on the 03.03.3019</p>
+<p>There should be soon new RNA-seq fastq files to map to the dm6 genome for us. You can use the exact same conditions as last time. Could you in addition, map the reads from another published study: GSE101463 (11 samples) We would like to compare their data with ours.</p>
+<div id="getting-the-published-data-from-geo" class="section level1">
+<h1>Getting the published data from GEO</h1>
+<pre class="bash"><code>fasterq-dump -p -e 10 --split-files -O fastqFiles SRR5828192
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828193
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828194
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828195
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828196
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828197
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828198
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828199
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828200
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828201
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828202
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828203
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828204
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828205
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828206
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828207
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828208
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828209
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828210
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828211
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828212
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828213</code></pre>
+</div>
+<div id="star-mapping-of-gse101463" class="section level1">
+<h1>STAR Mapping of GSE101463</h1>
+<pre class="bash"><code>ls -1 GSE101463/fastqFiles/
+SRR5828192_1.fastq
+SRR5828192_2.fastq
+SRR5828193_1.fastq
+SRR5828193_2.fastq
+SRR5828194_1.fastq
+SRR5828194_2.fastq
+SRR5828195_1.fastq
+SRR5828195_2.fastq
+SRR5828196_1.fastq
+SRR5828196_2.fastq
+SRR5828197_1.fastq
+SRR5828197_2.fastq
+SRR5828198_1.fastq
+SRR5828198_2.fastq
+SRR5828199_1.fastq
+SRR5828199_2.fastq
+SRR5828200_1.fastq
+SRR5828200_2.fastq
+SRR5828201_1.fastq
+SRR5828201_2.fastq
+SRR5828202_1.fastq
+SRR5828202_2.fastq
+SRR5828203_1.fastq
+SRR5828203_2.fastq
+SRR5828204_1.fastq
+SRR5828204_2.fastq
+SRR5828205_1.fastq
+SRR5828205_2.fastq
+SRR5828206_1.fastq
+SRR5828206_2.fastq
+SRR5828207_1.fastq
+SRR5828207_2.fastq
+SRR5828208_1.fastq
+SRR5828208_2.fastq
+SRR5828209_1.fastq
+SRR5828209_2.fastq
+SRR5828210_1.fastq
+SRR5828210_2.fastq
+SRR5828211_1.fastq
+SRR5828211_2.fastq
+SRR5828212_1.fastq
+SRR5828212_2.fastq
+SRR5828213_1.fastq
+SRR5828213_2.fastq</code></pre>
+<p>the samples here should be mapped to genome buold <em>dm6</em>.</p>
+<pre class="bash"><code>
+starIndex=&quot;/home/yeroslaviz/genomes/D_melanogaster/dm6/starIndex&quot;
+
+mkdir -p GSE101463/STAROutput # keep permissions
+
+for file in `ls -1 GSE101463/fastqFiles/*_1.fastq`
+do
+#echo &quot;$file&quot;
+base=$(echo $file | sed -E &quot;s/GSE101463\/fastqFiles\/(.*)_1.fastq/\1/&quot;)
+#base=$(echo $file | sed -E &quot;s/(.*)\_1\.fastq/\1/&quot;)
+echo &quot;running STAR for file $base&quot;
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --genomeDir $starIndex --outFileNamePrefix GSE101463/STAROutput/$base --readFilesIn GSE101463/fastqFiles/$base\_1.fastq GSE101463/fastqFiles/$base\_2.fastq 
+done</code></pre>
+</div>
+<div id="star-ampping-of-the-project-95-samples" class="section level1">
+<h1>STAR ampping of the project 95 samples</h1>
+<p>The project P95 was done here in the insitutute and should also be mapped to genome build <em>dm6</em></p>
+<pre class="bash"><code>
+
+mkdir -p P95/STAROutput # keep permissions
+
+for file in `ls -1 P95/conc.fastq/*.conc.R1.fastq.gz`
+do
+#echo &quot;$file&quot;
+base=$(echo $file | sed -E &quot;s/P95\/conc.fastq\/(.*).conc.R1.fastq.gz/\1/&quot;)
+#base=$(echo $file | sed -E &quot;s/(.*)\_1\.fastq/\1/&quot;)
+echo &quot;running STAR for file $base&quot;
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --genomeDir $starIndex --outFileNamePrefix P95/STAROutput/$base --readFilesIn $file
+done</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

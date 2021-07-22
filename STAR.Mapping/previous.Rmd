@@ -1,0 +1,17 @@
+---
+title: "previous"
+author: "AY"
+date: "11/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In the list of projects done with Jacque B in the Moeller lab I have also two more projects containing only bam files. 
+
+The first project, which is called in the folder strucutre 2nd.Dataset, was done apparently also on May 2018 and the bam files contains the prefix `2229`.
+
+the second project, which in the folder strucutre is called 3rd.Dataset, was done on November 2016 and has the number 2230 as prefix.
+

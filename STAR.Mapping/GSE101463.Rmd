@@ -1,0 +1,205 @@
+---
+title: "GSE101463.03.06.3019"
+author: "AY"
+date: "6/3/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+a new data set from the Müller group was released on the 03.03.3019
+
+There should be soon new RNA-seq fastq files to map to the dm6 genome for us. You can use the exact same conditions as last time.
+Could you in addition, map the reads from another published study:
+GSE101463 (11 samples)
+We would like to compare their data with ours.
+
+# Getting the published data from GEO
+```{r, engine='bash', eval=FALSE}
+fasterq-dump -p -e 10 --split-files -O fastqFiles SRR5828192
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828193
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828194
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828195
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828196
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828197
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828198
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828199
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828200
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828201
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828202
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828203
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828204
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828205
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828206
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828207
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828208
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828209
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828210
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828211
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828212
+fasterq-dump -p -e 10  --split-files -O fastqFiles SRR5828213
+```
+
+
+# STAR Mapping of GSE101463
+
+```{r, engine='bash', eval=FALSE}
+ls -1 GSE101463/fastqFiles/
+SRR5828192_1.fastq
+SRR5828192_2.fastq
+SRR5828193_1.fastq
+SRR5828193_2.fastq
+SRR5828194_1.fastq
+SRR5828194_2.fastq
+SRR5828195_1.fastq
+SRR5828195_2.fastq
+SRR5828196_1.fastq
+SRR5828196_2.fastq
+SRR5828197_1.fastq
+SRR5828197_2.fastq
+SRR5828198_1.fastq
+SRR5828198_2.fastq
+SRR5828199_1.fastq
+SRR5828199_2.fastq
+SRR5828200_1.fastq
+SRR5828200_2.fastq
+SRR5828201_1.fastq
+SRR5828201_2.fastq
+SRR5828202_1.fastq
+SRR5828202_2.fastq
+SRR5828203_1.fastq
+SRR5828203_2.fastq
+SRR5828204_1.fastq
+SRR5828204_2.fastq
+SRR5828205_1.fastq
+SRR5828205_2.fastq
+SRR5828206_1.fastq
+SRR5828206_2.fastq
+SRR5828207_1.fastq
+SRR5828207_2.fastq
+SRR5828208_1.fastq
+SRR5828208_2.fastq
+SRR5828209_1.fastq
+SRR5828209_2.fastq
+SRR5828210_1.fastq
+SRR5828210_2.fastq
+SRR5828211_1.fastq
+SRR5828211_2.fastq
+SRR5828212_1.fastq
+SRR5828212_2.fastq
+SRR5828213_1.fastq
+SRR5828213_2.fastq
+```
+
+the samples here should be mapped to genome buold *dm6*.
+
+```{r, engine='bash', eval=FALSE}
+
+starIndex="/home/yeroslaviz/genomes/D_melanogaster/dm6/starIndex"
+
+mkdir -p GSE101463/STAROutput # keep permissions
+
+for file in `ls -1 GSE101463/fastqFiles/*_1.fastq`
+do
+#echo "$file"
+base=$(echo $file | sed -E "s/GSE101463\/fastqFiles\/(.*)_1.fastq/\1/")
+#base=$(echo $file | sed -E "s/(.*)\_1\.fastq/\1/")
+echo "running STAR for file $base"
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --genomeDir $starIndex --outFileNamePrefix GSE101463/STAROutput/$base --readFilesIn GSE101463/fastqFiles/$base\_1.fastq GSE101463/fastqFiles/$base\_2.fastq 
+done
+```
+
+
+# STAR ampping of the project 95 samples
+
+The project P95 was done here in the insitutute and should also be mapped to genome build *dm6*
+
+
+```{r, engine='bash', eval=FALSE}
+
+
+mkdir -p P95/STAROutput # keep permissions
+
+for file in `ls -1 P95/conc.fastq/*.conc.R1.fastq.gz`
+do
+#echo "$file"
+base=$(echo $file | sed -E "s/P95\/conc.fastq\/(.*).conc.R1.fastq.gz/\1/")
+#base=$(echo $file | sed -E "s/(.*)\_1\.fastq/\1/")
+echo "running STAR for file $base"
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --genomeDir $starIndex --outFileNamePrefix P95/STAROutput/$base --readFilesIn $file
+done
+```
+
+# second set of files from GEO to analyze
+
+
+List of files to analyze:
+
+GSM2545903	HWT Poly-A RNA-seq rep1
+GSM2545904	HWT Poly-A RNA-seq rep2
+GSM2545905	HWT Poly-A RNA-seq rep3
+GSM2545906	K36R Poly-A RNA-seq rep1
+GSM2545907	K36R Poly-A RNA-seq rep2
+GSM2545908	K36R Poly-A RNA-seq rep3
+GSM2545909	HWT Nuclear RNA-seq male repA
+GSM2545910	HWT Nuclear RNA-seq male repB
+GSM2545911	HWT Nuclear RNA-seq male repC
+GSM2545912	HWT Nuclear RNA-seq male repD
+GSM2545913	HWT Nuclear RNA-seq female repA
+GSM2545914	HWT Nuclear RNA-seq female repB
+GSM2545915	HWT Nuclear RNA-seq female repC
+GSM2545916	HWT Nuclear RNA-seq female repD
+GSM2545917	K36R Nuclear RNA-seq male repA
+GSM2545918	K36R Nuclear RNA-seq male repB
+GSM2545919	K36R Nuclear RNA-seq male repC
+GSM2545920	K36R Nuclear RNA-seq male repD
+GSM2545921	K36R Nuclear RNA-seq female repA
+GSM2545922	K36R Nuclear RNA-seq female repB
+GSM2545923	K36R Nuclear RNA-seq female repC
+GSM2545924	K36R Nuclear RNA-seq female rep
+
+## Downloading the files
+
+```bash
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366366
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366367
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366368
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366369
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366370
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366371
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366372
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366373
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366374
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366375
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366376
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366377
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366378
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366379
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366380
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366381
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366382
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366383
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366384
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366385
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366386
+fasterq-dump -p -e 10 --split-files -O fastqFiles 	SRR5366387
+```
+
+## QC analysis
+
+```bash
+mkdir fastqcResults/
+fastqc -o fastqcResults/ -t 23 fastqFiles/*.fastq
+```
+
+## Mapping with `SATR`
+
+This uses the conda-snakemake script `Cotopaxi.Star.MappingQuant.PairedEndFastq.Snakefile` to run the Mapping-indexing-converting within the snakemake workflow.
+
+```bash
+snakemake -ps ~/poolFolders/pool-bcfngs/scripts/Cotopaxi.Star.MappingQuant.PairedEndFastq.Snakefile -j 18
+```
+
+
+

@@ -1,0 +1,159 @@
+---
+title: "STAR mapping"
+output:
+  html_document:
+    df_print: paged
+---
+
+This workflow was done to map the samples from both one published data set (GSE75060) a well as in-house data set.
+
+Organism - _Drosophila melanogaster_
+Mapping tool - STAR aligner
+genome build - dm6
+
+the session will run on supercube006 using conde
+
+# create conda session
+
+## create environment
+
+```{r, engine='bash', eval=FALSE}
+conda create --name JacqueB star
+conda activate JacqueB
+```
+
+## install necessary tool
+
+```{r, engine='bash', eval=FALSE}
+conda install -c bioconda star
+conda install -c bioconda sra-tools # to be able to wwork with fasterq_dump to download the SRA files
+
+```
+
+# Generate genomic index for STAR
+
+```{r engine='bash', eval=FALSE}
+cd /home/yeroslaviz/genomes/D_melanogaster/dm6
+STAR --runMode genomeGenerate --runThreadN 10 --genomeDir starIndex/ --genomeFastaFiles dmel-all-chromosome-r6.26.fasta --sjdbGTFfile dmel-all-r6.26.gtf  sjdbOverhang 99
+```
+
+## downloading the public data set
+
+The data set in question is GSE75060 (=SRP066261)
+it will be downloaded using the fastq_dump tool from the SRA toolkit.
+
+```{r, engine='bash', eval=FALSE}
+fasterq-dump --split-files -O fastqFiles SRR2919532
+fasterq-dump --split-files -O fastqFiles SRR2919533
+fasterq-dump --split-files -O fastqFiles SRR2919534
+fasterq-dump --split-files -O fastqFiles SRR2919535
+```
+
+I was trying to download the whole project in one go. the project name is **PRJNA302312**. 
+The idea how to do it I got from [here](https://www.biostars.org/p/163482/). 
+first one needs to get hte RunInfo table of the project. From within it, the links for each of the files should be extracted. this might need a little bit of tweeking, as the files are different for each project. 
+
+```{r engine='bash', eval=FALSE}
+wget 'http://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?save=efetch&rettype=runinfo&db=sra&term=PRJNA302312' -O - | grep -v '^Run' |  cut -d',' -f 1 |  xargs -n 1 fasterq-dump
+```
+
+the command comprises several steps 
+
+1. get the RunInfo table
+2. `grep` only for the rows which starts with Run. This way the header isa avoided. The Run rows contain the data to be downloaded.
+3. extract the field in the table (comma-separated, therfore `-d','`) with the name of the sample itself. This is field number 1. therefoe I uses the parameter `f1`.
+4. run for each of the links the command `fasterq-dump`, which downloads all the files. 
+
+Another way of eaching the same goal is using the esearch tool (entrez-direct).
+
+```{r engine='bash', eval=FALSE}
+esearch -db sra -query PRJNA291386 | efetch --format runinfo | cut -d ',' -f 1 | grep SRR | xargs fastq-dump
+```
+
+this can be done also with or without the option  `--split-3` for splitting paired-end files in to two separate files with `_1` and `_2` suffixes.
+
+
+# Mapping the public data set 
+
+## set parameters 
+
+```{r, engine='bash', eval=FALSE}
+starIndex="/home/yeroslaviz/genomes/D_melanogaster/dm6/starIndex/"
+```
+
+## map the files
+
+There are four files downloaded
+```{r, engine='bash', eval=FALSE}
+ls -1 GSE75060/
+SRR2919532.fastq
+SRR2919533.fastq
+SRR2919534.fastq
+SRR2919535.fastq
+```
+
+```{r, engine='bash', eval=FALSE}
+
+mkdir -p GSE75060.STAROutput # keep permissions
+
+for file in `ls -1 GSE75060/`
+do
+#echo "$file"
+#base=$(echo $file | sed -E "s/(.*\.)conc.R1.fastq.gz/\1/")
+base=$(echo $file | sed -E "s/(.*)\.fastq/\1/")
+echo "running STAR for file $base"
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --genomeDir $starIndex --outFileNamePrefix GSE75060.STAROutput/$base --readFilesIn GSE75060/$file
+done
+```
+
+## indexing
+
+```{r, engine='bash', eval=FALSE}
+cd GSE75060.STAROutput/
+  
+for i in ` ls -1 *.bam`
+do
+echo $i
+samtools index $i
+done
+
+```
+
+# Mapping the locally created fastq files
+
+```{r, engine='bash', eval=FALSE}
+starIndex="/home/yeroslaviz/genomes/D_melanogaster/dm6/starIndex/"
+rawData="/home/yeroslaviz/poolFolders/pool-bcfngs/fastq_files/P59/P59_Single_Dm_Embryo_1/conc.fastq/"
+```
+
+
+
+```{r, engine='bash', eval=FALSE}
+
+mkdir -p P59.STAROutput # keep permissions
+
+for file in `ls -1 $rawData/`
+do
+#echo "$file"
+#base=$(echo $file | sed -E "s/(.*\.)conc.R1.fastq.gz/\1/")
+base=$(echo $file | sed -E "s/(.*)\.fastq.gz/\1/")
+echo "running STAR for file $rawData/$base"
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --genomeDir $starIndex --outFileNamePrefix P59.STAROutput/$base --readFilesIn $rawData/$file
+done
+```
+
+## indexing
+
+```{r, engine='bash', eval=FALSE}
+cd P59.STAROutput/
+  
+for i in ` ls -1 *.bam`
+do
+echo $i
+samtools index $i
+done
+
+```
+
+
+

@@ -1,0 +1,49 @@
+---
+title: "index"
+author: "Asssa Y."
+date: "11/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Jacque B. projects - Moeller lab 
+
+In the past few years I have done several projects for Jacque B. from the Moeller group. 
+
+Some of this projects were of original data, other were just remapping datat from the [Gene Expression Omnibus](https://www.ncbi.nlm.nih.gov/geo/). 
+
+The Rmarkdown files for each of these projects are listed in the files below.
+
+## Projects 
+
+- [previous projects](previous.html)
+
+Contains sparse information about projects, where I don't have more information or relevance.
+
+- [P95](P95.html)
+
+This project was done on May 2018
+
+- [GSE101463](GSE101463.html)
+
+This projects was done on March  2019
+
+- [GSE75060](GSE75060.html)
+
+This project was done on June 2019
+
+- [P135](P135.html)
+
+This projects was done on November 2019 
+
+
+
+
+
+
+### contact
+
+[contact](contact.html)

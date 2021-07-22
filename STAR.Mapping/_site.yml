@@ -1,0 +1,27 @@
+name: "Assa Yeroslaviz PhD"
+output_dir: "."
+navbar:
+  title: "Jacque B. Projects - Moeller lab"
+  left:
+    - text: "P95"
+      href: P95.html
+    - text: "GSE101463"
+      href: GSE101463.html
+    - text: "GSE75060"
+      href: GSE75060.html
+    - text: "P135"
+      href: P135.html
+  right:
+    - icon: fa-envelope fa-lg
+      href: contact.html
+    - icon: fa-github fa-lg
+      href: http://github.com/frymor
+    - icon: fa-twitter fa-lg
+      href: https://twitter.com/AssaYeroslaviz
+    - icon: fa-linkedin fa-lg
+      href: https://www.linkedin.com/in/ayeroslaviz/
+output:
+  html_document:
+    theme: flatly        
+    highlight: textmate
+    css: 'styles.css'

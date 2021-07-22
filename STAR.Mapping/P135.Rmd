@@ -1,0 +1,163 @@
+---
+title: "P135"
+author: "AY"
+date: "11/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analysis fastq files for project P135
+
+by the look of the data it is a paired-end sample dataset. Jacque asked me to amp it both to the Dm6 and the Dp3 genomes. 
+
+"The only requirement in term of bioinformatic analysis is the mapping of the reads on the dm6 genome + the D. pseudoobscura dp3 genome (pseudoobscura chromatin was spiked in the melanogaster chromatin for downstream normalisation)"
+
+### Mapping to dm6
+
+#### Generate genomic index for STAR
+
+
+```{r engine='bash', eval=FALSE}
+cd /home/yeroslaviz/genomes/Drosophila_melanogaster/Dm6
+
+STAR --runMode genomeGenerate --runThreadN 15 --genomeDir STARIndex/ --genomeFastaFiles Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa --sjdbGTFfile Drosophila_melanogaster.BDGP6.22.45.gtf  sjdbOverhang 99
+```
+
+
+the samples here should be mapped to genome build *dm6*.
+
+```{r, engine='bash', eval=FALSE}
+
+cd /home/yeroslaviz/projects/JacqueB/P135/
+
+
+starIndex="/home/yeroslaviz/genomes/Drosophila_melanogaster/Dm6/STARIndex"
+
+mkdir -p /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dm6_STARMapping/ # keep permissions
+
+for file in `ls -1 rawData/*.R1.fastq.gz`
+do
+#echo "$file"
+base=$(echo $file | sed -E "s/rawData\/(.*).R1.fastq.gz/\1/")
+#base=$(echo $file | sed -E "s/(.*)\_1\.fastq/\1/")
+echo "running STAR for file $base"
+echo "STAR --genomeDir $starIndex --readFilesIn rawData/$base\.R1.fastq.gz rawData/$base\.R2.fastq.gz --outFileNamePrefix Analysis/Dm6_STARMapping/$base"
+STAR --runThreadN 15 --outBAMsortingThreadN 10 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --genomeDir $starIndex --outFileNamePrefix Analysis/Dm6_STARMapping/$base --readFilesIn rawData/$base\.R1.fastq.gz rawData/$base\.R2.fastq.gz
+done
+```
+
+## indexing
+
+```{r, engine='bash', eval=FALSE}
+cd /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dm6_STARMapping/
+  
+for i in ` ls -1 *.bam`
+do
+echo $i
+samtools index $i
+done
+```
+
+#### convet bam 2 bigwig
+
+##### get indexed fastA file
+
+```{r, engine='bash', eval=FALSE}
+samtools faidx /home/yeroslaviz/genomes/Drosophila_melanogaster/Dm6/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa
+cut -f 1,2  /home/yeroslaviz/genomes/Drosophila_melanogaster/Dm6/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa.fai > Dm6.chromSize
+```
+
+##### convert bam to wig to bigwig
+
+```{r, engine='bash', eval=FALSE}
+mkdir -p /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dm6_bigwig/
+
+cd /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dm6_STARMapping/
+for file in ` ls -1 *.bam`
+do
+base=$(echo $file | sed -E "s/.concAligned.sortedByCoord.out.bam//")
+echo $base
+bam2wig.py -i $file -s Dm6.chromSize -o /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dm6_bigwig/$base &> /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dm6_bigwig/$base.wigFiles.log
+rm -f /home/yeroslaviz/projects/JacqueB/P135/Anaysis/Dm6_bigwig/$base.wig
+done
+```
+
+######################################
+######################################
+######################################
+
+
+### Mapping to Dp3
+
+
+#### Generate genomic index for STAR
+
+As this is the first time, the indexed genome must be created first. 
+
+```{r engine='bash', eval=FALSE}
+cd /home/yeroslaviz/genomes/Drosophila_pseudoobscura/Dp3
+
+STAR --runMode genomeGenerate --runThreadN 15 --genomeDir STARIndex/ --genomeFastaFiles Drosophila_pseudoobscura.Dpse_3.0.dna.toplevel.fa --sjdbGTFfile Drosophila_pseudoobscura.Dpse_3.0.45.gtf  sjdbOverhang 99
+```
+
+the samples here should be mapped to genome build *Dp3*.
+
+```{r, engine='bash', eval=FALSE}
+
+cd /home/yeroslaviz/projects/JacqueB/P135
+
+starIndex="/home/yeroslaviz/genomes/Drosophila_pseudoobscura/Dp3/STARIndex"
+
+mkdir -p /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dp3_STARMapping/ # keep permissions
+
+for file in `ls -1 rawData/*.R1.fastq.gz`
+do
+#echo "$file"
+base=$(echo $file | sed -E "s/rawData\/(.*).R1.fastq.gz/\1/")
+#base=$(echo $file | sed -E "s/(.*)\_1\.fastq/\1/")
+echo "running STAR for file $base"
+echo "STAR --genomeDir $starIndex --readFilesIn rawData/$base\.R1.fastq.gz rawData/$base\.R2.fastq.gz --outFileNamePrefix Analysis/Dp3_STARMapping/$base"
+STAR --runThreadN 5 --outBAMsortingThreadN 5 --outReadsUnmapped Fastx --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --genomeDir $starIndex --outFileNamePrefix Analysis/Dp3_STARMapping/$base --readFilesIn rawData/$base\.R1.fastq.gz rawData/$base\.R2.fastq.gz
+done
+```
+
+## indexing
+
+```{r, engine='bash', eval=FALSE}
+cd /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dp3_STARMapping/
+  
+for i in ` ls -1 *.bam`
+do
+echo $i
+samtools index $i
+done
+```
+
+#### convet bam 2 bigwig
+
+##### get indexed fastA file
+
+```{r, engine='bash', eval=FALSE}
+samtools faidx /home/yeroslaviz/genomes/Drosophila_pseudoobscura/Dp3/Drosophila_pseudoobscura.Dpse_3.0.dna.toplevel.fa
+cut -f 1,2 /home/yeroslaviz/genomes/Drosophila_pseudoobscura/Dp3/Drosophila_pseudoobscura.Dpse_3.0.dna.toplevel.fa.fai > Dp3.chromSize
+```
+
+##### convert bam to wig to bigwig
+
+```{r, engine='bash', eval=FALSE}
+mkdir -p /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dp3_bigwig/
+
+cd /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dp3_STARMapping/
+for file in ` ls -1 *.bam`
+do
+base=$(echo $file | sed -E "s/.concAligned.sortedByCoord.out.bam//")
+echo $base
+bam2wig.py -i $file -s Dp3.chromSize -o /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dp3_bigwig/$base &> /home/yeroslaviz/projects/JacqueB/P135/Analysis/Dp3_bigwig/$base.wigFiles.log
+rm -f /home/yeroslaviz/projects/JacqueB/P135/Anaysis/Dp3_bigwig/$base.wig
+
+done
+```
+
