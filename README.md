@@ -1,5 +1,4 @@
 # JB_MappingRuns
-NGS project #406 Jacques B.
 
 I would to collect here all the runs done for the various mapping runs for Jacques B. 
 
