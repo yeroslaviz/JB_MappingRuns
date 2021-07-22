@@ -1,0 +1,59 @@
+# Get the appropriate genome for the analysis from the Ensembl FTP server.
+# To get the correct data copy-paste the link for the fastA and gtf files in the correct row.
+
+organism:
+  Hsp.GRCh38:
+    fasta: "ftp://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz"
+    gtf: "ftp://ftp.ensembl.org/pub/release-98/gtf/homo_sapiens/Homo_sapiens.GRCh38.98.gtf.gz"
+  Mmu.GrCm38:
+    fasta: "ftp://ftp.ensembl.org/pub/release-98/fasta/mus_musculus/dna/Mus_musculus.GRCm38.dna.primary_assembly.fa.gz"
+    gtf: "ftp://ftp.ensembl.org/pub/release-98/gtf/mus_musculus/Mus_musculus.GRCm38.98.gtf.gz"
+  Cel.WBcel235:
+    fasta: "ftp://ftp.ensembl.org/pub/release-98/fasta/caenorhabditis_elegans/dna/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.gz"
+    gtf: "ftp://ftp.ensembl.org/pub/release-98/gtf/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.98.gtf.gz"
+  Eco.HUSEC2011CHR1:
+    fasta: "ftp://ftp.ensemblgenomes.org/pub/release-45/bacteria//fasta/bacteria_91_collection/escherichia_coli/dna/Escherichia_coli.HUSEC2011CHR1.dna.toplevel.fa.gz"
+    gtf: "ftp://ftp.ensemblgenomes.org/pub/release-45/bacteria//gtf/bacteria_91_collection/escherichia_coli/Escherichia_coli.HUSEC2011CHR1.45.gtf.gz"
+  Dre.GRCz11:
+    fasta: "ftp://ftp.ensembl.org/pub/release-98/fasta/danio_rerio/dna/Danio_rerio.GRCz11.dna.primary_assembly.fa.gz"
+    gtf: "ftp://ftp.ensembl.org/pub/release-98/gtf/danio_rerio/Danio_rerio.GRCz11.98.gtf.gz"
+  Dme.BDGP6.28:
+    fasta: "ftp://ftp.ensembl.org/pub/current_fasta/drosophila_melanogaster/dna/Drosophila_melanogaster.BDGP6.28.dna.toplevel.fa.gz"
+    gtf: "ftp://ftp.ensembl.org/pub/current_gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.28.102.gtf.gz"
+  Sce.R64-1-1:
+    fasta: "ftp://ftp.ensembl.org/pub/release-98/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa.gz"
+    gtf: "ftp://ftp.ensembl.org/pub/release-98/gtf/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.98.gtf.gz"
+  Dps.3.0.49:
+    fasta: "ftp://ftp.ensemblgenomes.org/pub/current/metazoa/fasta/drosophila_pseudoobscura/dna/Drosophila_pseudoobscura.Dpse_3.0.dna.toplevel.fa.gz"
+    gtf: "ftp://ftp.ensemblgenomes.org/pub/current/metazoa/gtf/drosophila_pseudoobscura/Drosophila_pseudoobscura.Dpse_3.0.49.gtf.gz"
+######## Project Setting
+# To create a separate project results folder for each run, change the name of the project here. E.g. "P135", "P225", ...
+project: "P388"
+# this path would point to the raw data in fastq format. This must be changed each time for the correct data to be analyzed.
+# E.g. path: "/home/yeroslaviz/poolFolders/pool-bcfngs/fastq_files/P172/P172_20200115_FMMP/conc.fastq"
+# path: "/home/yeroslaviz/poolFolders/pool-bcfngs/fastq_files/P225/P225_20200525_JM_JB/conc.fastq" # when running from supercube oder cotopaxi
+path: "/fs/pool/pool-bcfngs/fastq_files/P388/P388_20210528_JM_JB/conc.fastq"
+ # When running from the hpcl clusters (e.g. hpcl5002).
+
+# Which organism to map the data to
+org: "Dps.3.0.49"
+
+##############
+# General parameters
+## Are the input files compressed [true, false]
+gzipped: true # For GEO files usually false, for institute's fastq files it is true.
+threads: 16
+
+## parameters for STAR indexing
+RAM:
+  168632718037
+   #  set maximum available RAM (bytes) for genome generation
+SAindex: 14 # For small genomes, the parameter --genomeSAindexNbases needs to be scaled down (default is 14).
+
+## Is your library stranded? options are [true, false]
+stranded: false
+
+## Parameters for chipseq runs (cut&Tag, chipseq, etc.)
+## which aligner is used - this is important ,so that only one of the mapping methods will be used in the downstream analysis [bowtie2, bwa, segemehl]
+mapper: "bowtie2"
+effGenomeSize: 2652783500

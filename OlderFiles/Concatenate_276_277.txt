@@ -1,0 +1,104 @@
+
+The snippet will concatenate the fastq.gz files from the two projects P276 and P277 into one big fastq file
+
+
+FILES="22P4_1_276.conc.R1.fastq.gz
+22P4_1_276.conc.R2.fastq.gz
+22P4_2_276.conc.R1.fastq.gz
+22P4_2_276.conc.R2.fastq.gz
+22P4_3_276.conc.R1.fastq.gz
+22P4_3_276.conc.R2.fastq.gz
+22P4_4_276.conc.R1.fastq.gz
+22P4_4_276.conc.R2.fastq.gz
+22P4_5_276.conc.R1.fastq.gz
+22P4_5_276.conc.R2.fastq.gz
+22P4_6_276.conc.R1.fastq.gz
+22P4_6_276.conc.R2.fastq.gz
+22P4_7_276.conc.R1.fastq.gz
+22P4_7_276.conc.R2.fastq.gz
+22P4_8_276.conc.R1.fastq.gz
+22P4_8_276.conc.R2.fastq.gz
+27J6_1_276.conc.R1.fastq.gz
+27J6_1_276.conc.R2.fastq.gz
+27J6_2_276.conc.R1.fastq.gz
+27J6_2_276.conc.R2.fastq.gz
+27J6_3_276.conc.R1.fastq.gz
+27J6_3_276.conc.R2.fastq.gz
+27J6_4_276.conc.R1.fastq.gz
+27J6_4_276.conc.R2.fastq.gz
+27J6_5_276.conc.R1.fastq.gz
+27J6_5_276.conc.R2.fastq.gz
+27J6_6_276.conc.R1.fastq.gz
+27J6_6_276.conc.R2.fastq.gz
+27J6_7_276.conc.R1.fastq.gz
+27J6_7_276.conc.R2.fastq.gz
+27J6_8_276.conc.R1.fastq.gz
+27J6_8_276.conc.R2.fastq.gz
+I48A_11_276.conc.R1.fastq.gz
+I48A_11_276.conc.R2.fastq.gz
+I48A_1_276.conc.R1.fastq.gz
+I48A_1_276.conc.R2.fastq.gz
+I48A_13_276.conc.R1.fastq.gz
+I48A_13_276.conc.R2.fastq.gz
+I48A_4_276.conc.R1.fastq.gz
+I48A_4_276.conc.R2.fastq.gz
+I48A_5_276.conc.R1.fastq.gz
+I48A_5_276.conc.R2.fastq.gz
+I48A_6_276.conc.R1.fastq.gz
+I48A_6_276.conc.R2.fastq.gz
+I48A_7_276.conc.R1.fastq.gz
+I48A_7_276.conc.R2.fastq.gz
+I48A_9_276.conc.R1.fastq.gz
+I48A_9_276.conc.R2.fastq.gz
+OR_10_276.conc.R1.fastq.gz
+OR_10_276.conc.R2.fastq.gz
+OR_11_276.conc.R1.fastq.gz
+OR_11_276.conc.R2.fastq.gz
+OR_12_276.conc.R1.fastq.gz
+OR_12_276.conc.R2.fastq.gz
+OR_1_276.conc.R1.fastq.gz
+OR_1_276.conc.R2.fastq.gz
+OR_13_276.conc.R1.fastq.gz
+OR_13_276.conc.R2.fastq.gz
+OR_14_276.conc.R1.fastq.gz
+OR_14_276.conc.R2.fastq.gz
+OR_15_276.conc.R1.fastq.gz
+OR_15_276.conc.R2.fastq.gz
+OR_4_276.conc.R1.fastq.gz
+OR_4_276.conc.R2.fastq.gz
+OR_5_276.conc.R1.fastq.gz
+OR_5_276.conc.R2.fastq.gz
+OR_6_276.conc.R1.fastq.gz
+OR_6_276.conc.R2.fastq.gz
+OR_7_276.conc.R1.fastq.gz
+OR_7_276.conc.R2.fastq.gz
+OR_9_276.conc.R1.fastq.gz
+OR_9_276.conc.R2.fastq.gz
+"
+
+for file in `ls -1 *.R1.fastq.gz`
+do
+echo $file
+R1=$(basename $file _276.conc.R1.fastq.gz)
+echo "$R1"
+cat /home/yeroslaviz/poolFolders/pool-bcfngs/fastq_files/P276/P276_20200918_JM_JB_r1/conc.fastq/$R1\_276.conc.R1.fastq.gz /home/yeroslaviz/poolFolders/pool-bcfngs/fastq_files/P277/P277_20200921_JM_JB_r2/conc.fastq/$R1\_277.conc.R1.fastq.gz > Conc_276_277/$R1\_276.277.conc.R1.fastq.gz
+done
+
+for file in `ls -1 *.R2.fastq.gz`
+do
+echo $file
+R2=$(basename $file _276.conc.R2.fastq.gz)
+echo "$R2"
+cat /home/yeroslaviz/poolFolders/pool-bcfngs/fastq_files/P276/P276_20200918_JM_JB_r1/conc.fastq/$R2\_276.conc.R2.fastq.gz /home/yeroslaviz/poolFolders/pool-bcfngs/fastq_files/P277/P277_20200921_JM_JB_r2/conc.fastq/$R2\_277.conc.R2.fastq.gz > Conc_276_277/$R2\_276.277.conc.R2.fastq.gz
+done
+
+
+
+
+
+
+
+
+
+
+

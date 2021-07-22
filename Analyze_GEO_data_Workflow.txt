@@ -1,0 +1,38 @@
+1. Getting the data
+
+#H3K27me2-OR-Head
+#GSM1147481_modEncode
+fasterq-dump -p -e 10 --split-files -O fastqFiles SRR870162
+
+#H3K4me3-Head-OR
+#GSM1147347_modEncode
+fasterq-dump -p -e 10 --split-files -O fastqFiles SRR870028 
+
+#H3K36me3-Head-OR
+#GSM1147323_modEncode
+fasterq-dump -p -e 10 --split-files -O fastqFiles SRR870004
+
+#H3K27me3-Head-OR
+#GSM1147485_modEncode
+fasterq-dump -p -e 10 --split-files -O fastqFiles  SRR870166
+ 
+#H3K27me2-14-16-hr-Embryo-OR
+#GSM1147311_modEncode
+fasterq-dump -p -e 10 --split-files -O fastqFiles  SRR869992
+ 
+#H3K27me1-Head-OR
+#GSM1147307_modEncode
+fasterq-dump -p -e 10 --split-files -O fastqFiles  SRR869984
+ 
+#H3K36me3-14-16-hr-Embryo-OR
+#GSM1147223_modEncode 
+fasterq-dump -p -e 10 --split-files -O fastqFiles  SRR869899
+ 
+#H3K27me3-14-16-hr-Embryo-OR
+#GSM1147115_modEncode
+fasterq-dump -p -e 10 --split-files -O fastqFiles  SRR869711
+
+
+2. Mapping
+
+genomeDir = /fs/pool/pool-bcfngs/genomes/Dme.BDGP6.22/starIndex/
